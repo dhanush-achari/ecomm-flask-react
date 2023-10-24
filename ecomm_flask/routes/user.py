@@ -1,9 +1,10 @@
 from ecomm_flask import app,db
-from flask import request, jsonify
+from flask import request, jsonify, session
 from ..models import User
 from flask_bcrypt import Bcrypt
 from flask_login import login_user, logout_user,LoginManager,login_required,current_user
-
+import pyotp
+import os
 
 #Login required decorator
 
@@ -37,17 +38,35 @@ def login():
     password = data["password"]
     user = User.query.filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password, password):
-        if login_user(user,remember=True):
-            # print(current_user)
-            user.authenticated = True
-            db.session.add(user)
-            db.session.commit()
-            return jsonify({"message": "User logged in successfully"}),200
-        else:
-            return jsonify({"message": "Login failed"}),401
+        session["user_id"] = user.id
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({"message": "User verified"}),200
     else:
         return jsonify({"message": "Invalid email or password"}),401
 
+@app.route("/otp_login", methods=["POST"])
+def otp_login():
+    if session.get("user_id"):
+        totp = pyotp.TOTP(pyotp.random_base32())
+        print(totp.now())
+        data = request.get_json()
+        otp = data["otp"]
+        user_id = session.get("user_id")
+        user = User.query.get(int(user_id))
+        if totp.verify(otp):
+            if login_user(user,remember=True):
+                # print(current_user)
+                user.authenticated = True
+                db.session.add(user)
+                db.session.commit()
+                return jsonify({"message": "User logged in successfully"}),200
+            else:
+                return jsonify({"message": "Login failed"}),401
+        else:
+            return jsonify({"message": "Invalid OTP"}),401
+    else:
+        return jsonify({"message": "User not logged in"}),401
 #change password route
 @app.route("/change_password", methods=["POST"])
 @login_required
