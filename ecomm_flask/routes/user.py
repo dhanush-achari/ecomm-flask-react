@@ -4,7 +4,7 @@ from ..models import User
 from flask_bcrypt import Bcrypt
 from flask_login import login_user, logout_user,LoginManager,login_required,current_user
 import pyotp
-import os
+from .emailer import send_email
 
 #Login required decorator
 
@@ -12,7 +12,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 bcrypt = Bcrypt(app)
-
 @login_manager.user_loader
 def user_loader(user_id):
     print(user_id,"user loader")
@@ -39,6 +38,11 @@ def login():
     user = User.query.filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password, password):
         session["user_id"] = user.id
+        session["totp"]=[]
+        totp = pyotp.TOTP(pyotp.random_base32())
+        otp = totp.now()
+        user.totp = otp
+        send_email(user.email, otp)
         db.session.add(user)
         db.session.commit()
         return jsonify({"message": "User verified"}),200
@@ -48,16 +52,15 @@ def login():
 @app.route("/otp_login", methods=["POST"])
 def otp_login():
     if session.get("user_id"):
-        totp = pyotp.TOTP(pyotp.random_base32())
-        print(totp.now())
-        data = request.get_json()
-        otp = data["otp"]
         user_id = session.get("user_id")
         user = User.query.get(int(user_id))
-        if totp.verify(otp):
+        data = request.get_json()
+        otp = data["otp"]
+        if user.totp==otp:
             if login_user(user,remember=True):
                 # print(current_user)
                 user.authenticated = True
+                user.totp = None
                 db.session.add(user)
                 db.session.commit()
                 return jsonify({"message": "User logged in successfully"}),200
