@@ -48,12 +48,28 @@ def login():
     else:
         return jsonify({"message": "Invalid email or password"}),401
 
+#change password route
+@app.route("/change_password", methods=["POST"])
+@login_required
+def change_password():
+    data = request.get_json()
+    old_password = data["old_password"]
+    new_password = data["new_password"]
+    user = User.query.filter_by(id=current_user.id).first()
+    if user and bcrypt.check_password_hash(user.password, old_password):
+        user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({"message": "Password changed successfully"}),200
+    else:
+        return jsonify({"message": "Invalid old password"}),401
+
 @app.route("/logout",methods=["GET"])
 @login_required
 def logout():
     user = current_user
     print(current_user)
-    user.is_authenticated = False
+    user.authenticated = False
     db.session.add(user)
     db.session.commit()
     logout_user()
