@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Cookies from 'js-cookie';
+import { useNavigate } from "react-router-dom";
+
 const AuthForm = styled.form`
   width: 100%;
   max-width: 400px;
@@ -31,7 +33,8 @@ const Button = styled.button`
 
 const VerifyOtp = () => {
   const [otp, setOtp] = useState("");
-
+  const navigate = useNavigate();
+  
   const handleSubmit = (event) => {
     event.preventDefault();
       var otpJson = {
@@ -57,7 +60,9 @@ const VerifyOtp = () => {
           'Content-Type': 'application/json'
         }
       })
-      .then(response => response.json())
+      .then((response) => {
+          response.json()
+          navigate("/home");})
       .then((data) => {
         console.log(data);
       })

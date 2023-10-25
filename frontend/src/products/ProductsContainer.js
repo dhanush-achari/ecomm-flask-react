@@ -46,7 +46,7 @@ const ProductPrice = styled.h3`
 `;
 const ProductsContainer = () => {
   const [products, setProducts] = useState([]);
-
+    
   useEffect(() => {
     async function fetchProducts() {
       const response = await fetch("http://127.0.0.1:5000/products");
