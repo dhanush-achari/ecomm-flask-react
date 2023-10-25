@@ -1,0 +1,33 @@
+
+[
+    {
+      "id": 1,
+      "product_name": "Samsung S23",
+      "product_description": "Meet the new Galaxy S23 and S23+ in four colors.",
+      "product_img": "https://m.media-amazon.com/images/I/61RZDb2mQxL._SL1500_.jpg"
+    },
+    {
+      "id": 2,
+      "product_name": "iPhone 14 Pro",
+      "product_description": "The most advanced iPhone ever.",
+      "product_img": "https://m.media-amazon.com/images/I/71ZDY57yTQL._SL1500_.jpg"
+    },
+    {
+      "id": 3,
+      "product_name": "Google Pixel 7 Pro",
+      "product_description": "The best of Google, now even better.",
+      "product_img": "https://m.media-amazon.com/images/I/61PZbEn0JfL._SL1200_.jpg"
+    },
+    {
+      "id": 4,
+      "product_name": "MacBook Air M2",
+      "product_description": "The future of notebooks is thin, light, and powerful.",
+      "product_img": "https://m.media-amazon.com/images/I/61LNGJEMh0L._SL1500_.jpg"
+    },
+    {
+      "id": 5,
+      "product_name": "Sony PlayStation 5",
+      "product_description": "The ultimate gaming experience.",
+      "product_img": "https://m.media-amazon.com/images/I/61qM7CPPcrL._SL1500_.jpg"
+    }
+  ]  

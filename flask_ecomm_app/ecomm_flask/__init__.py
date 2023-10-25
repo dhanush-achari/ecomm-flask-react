@@ -11,6 +11,6 @@ app.secret_key = os.getenv("SECRET_KEY")
 db = init_db(app)
 
 from .routes import User
-
+from .routes import *
 
 
