@@ -33,6 +33,7 @@ def register():
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
+    print(data)
     username = data["username"]
     password = data["password"]
     user = User.query.filter_by(username=username).first()
