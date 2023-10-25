@@ -38,24 +38,26 @@ def login():
     password = data["password"]
     user = User.query.filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password, password):
-        session["user_id"] = user.id
-        session["totp"]=[]
+        # session["user_id"] = user.id
+        user_id = user.id
         totp = pyotp.TOTP(pyotp.random_base32())
         otp = totp.now()
         user.totp = otp
         send_email(user.email, otp)
         db.session.add(user)
         db.session.commit()
-        return jsonify({"message": "User verified"}),200
+        return jsonify({"user_id":user_id,"message": "User verified"}),200
     else:
         return jsonify({"message": "Invalid email or password"}),401
 
-@app.route("/otp_login", methods=["POST"])
+@app.route("/otp_login", methods=["POST","GET"])
 def otp_login():
-    if session.get("user_id"):
-        user_id = session.get("user_id")
-        user = User.query.get(int(user_id))
-        data = request.get_json()
+    print(request.get_json())
+    print(session.get("user_id"))
+    data = request.get_json()
+    if User.query.get(int(data["user_id"])):
+        # user_id = session.get("user_id")
+        user = User.query.get(int(data["user_id"]))
         otp = data["otp"]
         if user.totp==otp:
             if login_user(user,remember=True):
@@ -70,7 +72,7 @@ def otp_login():
         else:
             return jsonify({"message": "Invalid OTP"}),401
     else:
-        return jsonify({"message": "User not logged in"}),401
+        return jsonify({"message": "User not registered"}),401
 #change password route
 @app.route("/change_password", methods=["POST"])
 @login_required
