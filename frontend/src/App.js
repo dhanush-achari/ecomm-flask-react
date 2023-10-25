@@ -1,8 +1,6 @@
 import AuthFormContainer from "./users/UserRegistration";
 import Base from "./base";
 import VerifyOtp from "./users/VerifyOtp";
-import Navbar from "./home/Nav";
-import ProductsContainer from "./products/ProductsContainer";
 import Home from "./home/Home";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 function App() {
