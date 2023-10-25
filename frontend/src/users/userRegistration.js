@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
 const AuthForm = styled.form`
   width: 100%;
   max-width: 400px;
@@ -33,7 +35,7 @@ const AuthFormContainer = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     if (authType === "login") {
@@ -46,7 +48,9 @@ const AuthFormContainer = () => {
       axios
         .post("http://127.0.0.1:5000/login", jsonData)
         .then(function (response) {
-          console.log(response);
+          console.log(response.data.user_id);
+          Cookies.set('user_id', response.data.user_id, { expires: 7 });
+          navigate("/verifyOtp");
           //Perform action based on response
         })
         .catch(function (error) {
